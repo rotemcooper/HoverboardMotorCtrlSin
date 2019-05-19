@@ -99,18 +99,21 @@ uint8_t Uart_RX_process() {
 	switch (input)
 	{
     	case '+':
-          	motor_R_pwm_inc( 1 );
-		  	motors_speeds(0, MIN_SPEED);         
-          	break;
+			Uart_TX_blocking( "Received +" ); 
+          	//motor_R_pwm_inc( 1 );
+		  	//motors_speeds(0, MIN_SPEED);
+			break;
             
         case '-':
-          	motor_R_pwm_inc( -1 );
-		  	motors_speeds(0, MIN_SPEED);
+          	Uart_TX_blocking( "Received -" ); 
+			//motor_R_pwm_inc( -1 );
+		  	//motors_speeds(0, MIN_SPEED);
           	break;
 
 		case '0':
 			motor_R_pwm_set( 0 );
 			motors_speeds(0, 0);
+			Uart_TX_blocking( "Received 0" );
            	break;
 
 /*
@@ -225,6 +228,11 @@ void Uart_TX(char *message)
 {
 	uart.TX_free = 0;    //busy
 	HAL_UART_Transmit_DMA(&huart2, (uint8_t *)message, strlen(message));
+}
+
+void Uart_TX_blocking( char *message ) {
+	while( !uart.TX_free );
+	Uart_TX( message );
 }
 
 /* Check if RX line is free -- flag is cleared upon RX Completion.

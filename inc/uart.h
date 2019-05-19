@@ -25,6 +25,7 @@ void MX_USART2_UART_Init(void);
 
 uint8_t Uart_RX_process();
 void Uart_TX(char *message);
+void Uart_TX_blocking(char *message);
 
 uint8_t Uart_is_RX_available(void);
 uint8_t Uart_is_TX_free(void);
