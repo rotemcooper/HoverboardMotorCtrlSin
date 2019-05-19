@@ -210,6 +210,27 @@ void motors_speeds(int16_t l_rpm, int16_t r_rpm) {
 	motor_speed(&motor_R, r_rpm);
 }
 
+//rotemc
+
+// Set percent PWM duty for Right motor
+void motor_R_pwm_set(int32_t duty) {
+	motor_pwm(&motor_R, duty);
+}
+
+// Set percent PWM duty for Left motor
+void motor_L_pwm_set(int32_t duty) {
+	motor_pwm(&motor_L, duty);
+}
+
+void motor_R_pwm_inc(int32_t val) {
+	motor_pwm(&motor_R, motor_R.pwm + val);
+}
+
+void motor_L_pwm_inc(int32_t val) {
+	motor_pwm(&motor_L, motor_L.pwm + val);
+}
+//rotemc
+
 //-------------------------------interrupt callbacks-------------------------------
 /* This is the interrupt function for whenever the hall sensor readings change.
  */

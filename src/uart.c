@@ -54,27 +54,100 @@ void MX_USART2_UART_Init(void)
 	HAL_UART_Receive_DMA(&huart2, (uint8_t*) uart.RX_buffer, BUFFER_LENGTH);
 }
 
+//rotemc
+//------------------------------------------------------------------------------
 
-int Uart_get_char( char* c) 
+int Uart_get_char( char* c ) 
 {
-	int8_t rx_length;
-	uint8_t dma_count;	
+	//int8_t rx_length;
+	uint8_t dma_count;
+	uint8_t rx_index = uart.RX_pointer;	
 
 	if (!uart.RX_available) {
 		return 0;
 	}
-	//find the length of received data
+	
+	// If no data received, return.
 	dma_count =  BUFFER_LENGTH - __HAL_DMA_GET_COUNTER(&hdma_usart2_rx);
-	rx_length = dma_count - uart.RX_pointer; //difference from last count
-	if (rx_length < 0) {
-		rx_length = (rx_length + BUFFER_LENGTH) % BUFFER_LENGTH; //if wrapped around, fix the length
-	} else if (rx_length == 0) {
-			return 0;
+	if( dma_count == rx_index ) {
+		return 0;
 	}
-	*c = uart.RX_buffer[uart.RX_pointer];
-	uart.RX_pointer = (uart.RX_pointer+1) % BUFFER_LENGTH;
+
+	*c = uart.RX_buffer[rx_index++];
+	uart.RX_pointer = rx_index % BUFFER_LENGTH;
+	
+	/*
+	char buf[100];
+	if( rx_index == BUFFER_LENGTH ) {
+        while( !Uart_is_TX_free() );
+		sprintf( buf,"wrap around [%d, %d]\n", rx_index, uart.RX_pointer);
+		Uart_TX( buf );
+	}
+	*/
+
 	return 1;
 }
+
+#if 1
+uint8_t Uart_RX_process() {
+	char input;
+	if (Uart_get_char(&input) == 0) {
+		return 0;
+	}
+/*
+	switch (input)
+	{
+    	case '+':
+          prev = Serial.read();
+          *add += 10;          
+          break;
+            
+        case '-':
+          prev = Serial.read();
+          *add -= 10;
+          break;
+
+        case '*':
+          prev = Serial.read();
+          *mult += 1;
+          break;
+      
+        case '/':
+          prev = Serial.read();
+          *mult = constrain( *mult-1, 1, *mult );
+          break;
+
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          if( prev == '+' || prev == '-' ) {
+            *add = getNum();
+          }
+          else if( prev == '*' || prev == '/' ) {
+            *mult = getNum();
+          }
+          else {
+            return; // To be handeled at outer loop
+          }
+          break;          
+        
+        default:
+          return; // To be handeled at outer loop
+      }     
+	}
+	*/
+
+}
+#else
+//--------------------------------------------------------------------------
+//rotemc
 
 /* Look at the bytes you haven't processed yet, and using SLIP, process each non-empty frame.
  * SLIP end / escape characters are defined in constants.h
@@ -136,6 +209,7 @@ uint8_t Uart_RX_process() {
 
 	return 0;
 }
+#endif
 
 /* Do the actual transmission of data.
  * NEED TO CHECK IF TX IS FREE BEFORE CALLING THIS METHOD.

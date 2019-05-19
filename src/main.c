@@ -70,14 +70,17 @@ int main(void)
 		if( i>0 ) {
 			//sprintf((char *) &uart.TX_buffer[i], "\n");
 			uart.TX_buffer[i] = 0;
+			while( !Uart_is_TX_free() );
 			Uart_TX ( (char *) &uart.TX_buffer[0] );
 		}
 		
+		/*
 		if (Uart_is_TX_free()) {
 			sprintf((char *) &uart.TX_buffer[0], "Hello %d\n", j++);
 			Uart_TX ( (char *) &uart.TX_buffer[0] );
 			//Uart_TX( "Hello %d\n");
-		}    	
+		}
+		*/   	
 
 		for(unsigned int i=0; i<3000000; i++);
 		buzzer_one_beep();	
@@ -133,7 +136,7 @@ static void receive_data() {
 	int uart_rx_status = Uart_RX_process();
 	if (uart_rx_status == 1) {
 		last_rx_time = HAL_GetTick();
-		motors_speeds(speeds[0], speeds[1]);
+		//rotemc motors_speeds(speeds[0], speeds[1]);
 	}
 }
 
