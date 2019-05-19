@@ -62,6 +62,7 @@ struct Motor {
 	struct Motor_setup setup;
 	volatile uint32_t uwPeriodValue;
 	volatile uint8_t position; //hall
+	volatile uint32_t us_since_last_tick; // hall - rotemc
 	volatile uint8_t next_position; //hall
 
 	volatile float pwm;

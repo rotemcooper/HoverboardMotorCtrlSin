@@ -271,6 +271,7 @@ void Speed_ISR_Callback(struct Motor *motor) {
 	}
 
 	//rotemc
+	motor->us_since_last_tick += motor->speed;
 	if (newPos == motor->position) {
 		return;
 	}
@@ -313,7 +314,10 @@ void Speed_ISR_Callback(struct Motor *motor) {
 
 	motor_low_on(motor, REVERSE_HALL_LOOKUP[motor->next_position][2]);
 
-	__HAL_TIM_SET_AUTORELOAD(&(motor->setup.htim_duty), (motor->speed >> 4) - 1);
+	//rotemc
+	__HAL_TIM_SET_AUTORELOAD(&(motor->setup.htim_duty), (/*motor->speed rotemc*/motor->us_since_last_tick >> 4) - 1);
+	motor->us_since_last_tick = 0;
+	//rotemc
 }
 
 // ----------------------PRIVATE----------------------
