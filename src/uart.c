@@ -99,12 +99,20 @@ uint8_t Uart_RX_process() {
 	switch (input)
 	{
     	case '+':
-          motor_R_pwm_inc( 1 );        
-          break;
+          	motor_R_pwm_inc( 1 );
+		  	motors_speeds(0, MIN_SPEED);         
+          	break;
             
         case '-':
-          motor_R_pwm_inc( -1 );
-          break;
+          	motor_R_pwm_inc( -1 );
+		  	motors_speeds(0, MIN_SPEED);
+          	break;
+
+		case '0':
+			motor_R_pwm_set( 0 );
+			motors_speeds(0, 0);
+           	break;
+
 /*
         case '*':
           prev = Serial.read();
