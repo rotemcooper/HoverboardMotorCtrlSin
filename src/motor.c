@@ -213,8 +213,9 @@ void motors_speeds(int16_t l_rpm, int16_t r_rpm) {
 //-------------------------------interrupt callbacks-------------------------------
 /* This is the interrupt function for whenever the hall sensor readings change.
  */
+//volatile int hall_cntr = 0;
 void HALL_ISR_Callback(struct Motor *motor) {
-
+	//hall_cntr++;	
 }
 
 /* This is the interrupt function to change the duty cycle 16x per commutation phase.
@@ -269,11 +270,17 @@ void Speed_ISR_Callback(struct Motor *motor) {
 		newPos = in_range(motor_get_position(motor) + motor->setup.OFFSET_NEG_HALL);
 	}
 
+	//rotemc
+	if (newPos == motor->position) {
+		return;
+	}
+	/*	
 	if (newPos == motor->position) {
 		motor_pwm(motor, motor->pwm + motor->pos_increment);
 	} else if (in_range(newPos - motor->position - motor->direction) != 0) {
 		motor_pwm(motor, motor->pwm - motor->neg_increment);
-	}
+	} */
+	//rotemc
 
 	motor->position = newPos;
 
@@ -352,6 +359,74 @@ static void motor_start(struct Motor *motor) {
 	motor_pwm(motor, 0);
 	motor->stop = 0;
 }
+
+//rotemc
+//-----------------------------------------------------------------------------
+
+/* Adjust the speed for a motor according to the input speed in us per tick
+*/
+static void motor_speed_us_per_tick(struct Motor *motor, int16_t tick_speed) {
+	if (tick_speed == 0) {
+		motor_stop(motor);
+		return;
+	}
+	//HAL_GetTick();
+/*
+	//check it is in the valid range
+	int absrpm = rpm;
+	if (absrpm < 0) {
+		absrpm = 0 - absrpm;
+	}
+
+	if (absrpm > MAX_SPEED) {
+		absrpm = MAX_SPEED;
+		SET_ERROR_BIT(status, STATUS_SPEED_OUT_OF_BOUNDS);
+	} else if (absrpm < MIN_SPEED) { //min
+		motor_stop(motor);
+		SET_ERROR_BIT(status, STATUS_SPEED_OUT_OF_BOUNDS);
+		return;
+	} else {
+		CLR_ERROR_BIT(status, STATUS_SPEED_OUT_OF_BOUNDS);
+	}
+	*/
+
+	//1000000 microseconds / second * 60 seconds / minute
+	//float tick_speed = 1000000 * 60 / (WHEEL_HALL_COUNTS * rpm);
+	int16_t old_speed = motor->speed;
+
+	if (tick_speed < 0) {
+		motor->direction = -1 * motor->setup.OFFSET_DIR;
+		motor->speed = -1 * (int16_t) tick_speed; //absolute value of <speed>
+	} else {
+		motor->direction = motor->setup.OFFSET_DIR;
+		motor->speed = (int16_t) tick_speed;
+	}
+   
+	if (old_speed != motor->speed) {
+		/*
+		if (old_speed < motor->speed) {
+			motor->pos_increment = 1;
+			motor->neg_increment = 0.1;
+		} else if (old_speed > motor->speed) {
+			motor->pos_increment = 0.1;
+			motor->neg_increment = 2;
+		}
+		*/
+
+		// set the register of the next thing
+		__HAL_TIM_SET_AUTORELOAD(&(motor->setup.htim_speed), motor->speed - 1);
+	}
+
+	if (motor->stop == 1) {
+		motor_start(motor);
+	}
+
+}
+
+
+
+//-----------------------------------------------------------------------------
+//rotemc
 
 /* Set the speed for a motor by setting the timer to the right value.
  * If the speed is out of range, one of the error bits is set.
@@ -755,6 +830,10 @@ static void motor_set_pwm_all(struct Motor *motor, float value) {
 static int motor_get_position(struct Motor *motor) {
 	int pos = (motor->setup.HALL_PORT->IDR & (motor->setup.HALL_PINS[0] | motor->setup.HALL_PINS[1] | motor->setup.HALL_PINS[2])) / motor->setup.HALL_PINS[0];
 	return HALL_LOOKUP[pos - 1];
+}
+//rotemc
+int motor_R_position() {
+	return motor_get_position( &motor_R );
 }
 
 /* Effectively modulos 6 operator, but without actually doing any division.

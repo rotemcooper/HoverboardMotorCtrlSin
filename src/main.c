@@ -141,6 +141,9 @@ static void receive_data() {
  * Send the status byte, as well as the battery voltage if the TX line is free.
  * In DEBUG mode, additional readings are outputted - current readings from the wheel.
  */
+extern int motor_R_position(); //rotemc
+//extern int hall_cntr;
+
 static void transmit_data() {
 	float data_v;
 	data_v = get_battery_volt();
@@ -152,7 +155,7 @@ static void transmit_data() {
 	data_i_R = get_motor_current(&adc_R);
 	sprintf((char *)&uart.TX_buffer[0],"[%d, %d, %d, %d]\n", status, (int)data_v, (int)data_i_L, (int)data_i_R);
 #else
-	sprintf((char *)&uart.TX_buffer[0],"[%d, %d]\n", status, (int)data_v);
+	sprintf((char *)&uart.TX_buffer[0],"[%d, %d], right hall_cnt=%d\n", status, (int)data_v, motor_R_position() );
 #endif
 
 	if (Uart_is_TX_free()) {
