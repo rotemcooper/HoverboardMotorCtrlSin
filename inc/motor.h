@@ -86,6 +86,13 @@ void motors_stop();
 void motors_calibrate();
 void motors_speeds(int16_t l_rpm, int16_t r_rpm);
 
+//rotemc
+void motor_R_pwm_set(int32_t duty);
+void motor_L_pwm_set(int32_t duty);
+void motor_R_pwm_inc(int32_t val);
+void motor_L_pwm_inc(int32_t val);
+//rotemc
+
 void HALL_ISR_Callback(struct Motor *motor);
 void Duty_ISR_Callback(struct Motor *motor);
 void Speed_ISR_Callback(struct Motor *motor);

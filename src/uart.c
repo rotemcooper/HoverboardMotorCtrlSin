@@ -3,6 +3,7 @@
  */
 
 #include "uart.h"
+#include "motor.h"
 #include "stm32f1xx_hal.h"
 #include "stdio.h"
 #include "string.h"
@@ -94,19 +95,17 @@ uint8_t Uart_RX_process() {
 	if (Uart_get_char(&input) == 0) {
 		return 0;
 	}
-/*
+
 	switch (input)
 	{
     	case '+':
-          prev = Serial.read();
-          *add += 10;          
+          motor_R_pwm_inc( 1 );        
           break;
             
         case '-':
-          prev = Serial.read();
-          *add -= 10;
+          motor_R_pwm_inc( -1 );
           break;
-
+/*
         case '*':
           prev = Serial.read();
           *mult += 1;
@@ -137,13 +136,13 @@ uint8_t Uart_RX_process() {
             return; // To be handeled at outer loop
           }
           break;          
-        
+      */  
         default:
-          return; // To be handeled at outer loop
-      }     
+          break; // To be handeled at outer loop
+    
 	}
-	*/
 
+	return 1;	
 }
 #else
 //--------------------------------------------------------------------------

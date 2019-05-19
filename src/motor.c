@@ -222,10 +222,12 @@ void motor_L_pwm_set(int32_t duty) {
 	motor_pwm(&motor_L, duty);
 }
 
+// Increase percent PWM duty for Right motor
 void motor_R_pwm_inc(int32_t val) {
 	motor_pwm(&motor_R, motor_R.pwm + val);
 }
 
+// Increase percent PWM duty for Left motor
 void motor_L_pwm_inc(int32_t val) {
 	motor_pwm(&motor_L, motor_L.pwm + val);
 }
