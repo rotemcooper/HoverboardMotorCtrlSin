@@ -211,7 +211,6 @@ void motors_speeds(int16_t l_rpm, int16_t r_rpm) {
 }
 
 //rotemc
-
 // Set percent PWM duty for Right motor
 void motor_R_pwm_set(int32_t duty) {
 	motor_pwm(&motor_R, duty);
@@ -380,6 +379,7 @@ static void motor_init(struct Motor *motor) {
  * setting the duty cycles to 0.
  */
 static void motor_start(struct Motor *motor) {
+	//Uart_TX_blocking( "motor_start()\n");
 	motor_set_pwm_all(motor, 0);
 	HAL_NVIC_SetPriority(motor->setup.EXTI_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(motor->setup.EXTI_IRQn);
@@ -504,6 +504,10 @@ static void motor_speed(struct Motor *motor, int16_t rpm) {
 
 		// set the register of the next thing
 		__HAL_TIM_SET_AUTORELOAD(&(motor->setup.htim_speed), motor->speed - 1);
+		int duty = (int) motor->pwm;
+		
+		//DEBUG_MSG3( "motor_speed, frq=%dus, duty=%.2f, %d\n", motor->speed, motor->pwm, 0 );
+		DEBUG_MSG3( "motor_speed, frq=%dus, duty=%d, %d\n", motor->speed, duty, 0 );
 	}
 
 	if (motor->stop == 1) {
@@ -629,6 +633,7 @@ static void motor_pwm(struct Motor *motor, float value_percent) {
 /* Stop everything: turn off all the fets, and set the PWM duty cycles to 0.
  */
 static void motor_stop(struct Motor *motor) {
+	
 	motor_set_pwm_all(motor, 0);
 	motor->stop = 1;
 
@@ -643,6 +648,8 @@ static void motor_stop(struct Motor *motor) {
 	__HAL_GPIO_EXTI_CLEAR_IT(motor->setup.HALL_PINS[0]);
 	__HAL_GPIO_EXTI_CLEAR_IT(motor->setup.HALL_PINS[1]);
 	__HAL_GPIO_EXTI_CLEAR_IT(motor->setup.HALL_PINS[2]);
+	
+	//Uart_TX_blocking( "motor_stop()\n");
 }
 
 // ----------------------PRIVATE----------------------

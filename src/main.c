@@ -111,7 +111,7 @@ int main(void)
 
 		// transmit status/info every TX_WAIT_PERIOD ms
 		if (time - last_tx_time > TX_WAIT_PERIOD) {
-			transmit_data();
+			//rotemc transmit_data();
 		}
 
 		// check to make sure power levels are ok
@@ -134,10 +134,10 @@ int main(void)
  */
 static void receive_data() {
 	int uart_rx_status = Uart_RX_process();
-	if (uart_rx_status == 1) {
+	//if (uart_rx_status == 1) {
 		last_rx_time = HAL_GetTick();
 		//rotemc motors_speeds(speeds[0], speeds[1]);
-	}
+	//}
 }
 
 /* TRANSMIT DATA

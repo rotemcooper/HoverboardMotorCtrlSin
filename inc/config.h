@@ -14,7 +14,7 @@
  * You'll need to have UART (9600 baud rate) set up to see what the st microcontroller
  * is outputting.
  */
-//#define CALIBRATION //comment out when not in use
+#define CALIBRATION //comment out when not in use
 
 /* Use DEBUG mode to send extra data via UART (such as the motor currents)
  */
@@ -26,7 +26,6 @@
 
 /* One beep at start
  */
-//rotemc
 #define BUZZER_START_DEBUG //comment out when not in use
 
 /* Pick a mode for control - trapezoidal or sinusoidal. Trapezoidal is simpler
@@ -34,7 +33,9 @@
  */
 #define TRAPEZOIDAL_CONTROL 0
 #define SINUSOIDAL_CONTROL 1
-#define CONTROL_METHOD TRAPEZOIDAL_CONTROL
+//rotemc
+//#define CONTROL_METHOD TRAPEZOIDAL_CONTROL
+#define CONTROL_METHOD SINUSOIDAL_CONTROL
 
 
 

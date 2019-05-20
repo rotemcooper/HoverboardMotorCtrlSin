@@ -32,6 +32,10 @@ uint8_t Uart_is_TX_free(void);
 
 extern void error_handler(void);
 
+#define DEBUG_MSG3( str, a, b, c ) { \
+	sprintf((char *)&uart.TX_buffer[0], str, a, b, c ); \
+	Uart_TX_blocking( (char *)&uart.TX_buffer[0] ); }
+
 #ifdef __cplusplus
 }
 #endif
